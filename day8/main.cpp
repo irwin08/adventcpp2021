@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include "solver.h"
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
     std::vector<std::string> tokens;
@@ -47,6 +48,7 @@ void trim(std::string& str) {
 int main() {
     
     std::vector<std::string> lines;
+    std::vector<std::string> signals;
 
     std::string line;
     std::ifstream file_stream {"input.txt"};
@@ -55,6 +57,9 @@ int main() {
         auto split_line = split(line, '|');
         trim(split_line[1]);
         lines.push_back(split_line[1]);
+
+        trim(split_line[0]);
+        signals.push_back(split_line[0]);
     }
 
     int one_count = 0;
@@ -83,11 +88,29 @@ int main() {
         }
     }
 
+    std::vector<std::vector<std::string>> vector_of_signals;
+
+    for(auto str : signals) {
+        auto sig = split(str, ' ');
+        vector_of_signals.push_back(sig);
+    }
+
     std::cout << "Ones: " << one_count << std::endl;
     std::cout << "Fours: " << four_count << std::endl;
     std::cout << "Sevens: " << seven_count << std::endl;
     std::cout << "Eights: " << eight_count << std::endl;
     std::cout << "Total: " << one_count+four_count+seven_count+eight_count << std::endl;
+
+    int total = 0;
+
+    for(int i = 0; i < vector_of_signals.size(); i++) {
+        auto out_lines = split(lines[i], ' ');
+
+        Solver solver {vector_of_signals[i], out_lines};
+        total += solver.solve();
+    }
+
+    std::cout << "Overall Total: " << total << std::endl;
 
     return 0;
 }
